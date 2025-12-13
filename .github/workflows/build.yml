@@ -1,0 +1,116 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-nuitka:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install nuitka ordered-set zstandard
+
+      - name: Build with Nuitka
+        run: |
+          python -m nuitka --standalone --onefile --windows-console-mode=disable --enable-plugin=pyside6 --output-filename=OpenAI_Model_Fetcher_Nuitka.exe main.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nuitka-Build
+          path: OpenAI_Model_Fetcher_Nuitka.exe
+
+  build-pyinstaller:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --noconsole --name OpenAI_Model_Fetcher_PyInstaller main.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PyInstaller-Build
+          path: dist/OpenAI_Model_Fetcher_PyInstaller.exe
+
+  build-pyappify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyappify
+
+      - name: Build with PyAppify
+        run: |
+          pyappify build main.py --name OpenAI_Model_Fetcher_PyAppify --onefile --noconsole
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PyAppify-Build
+          path: dist/OpenAI_Model_Fetcher_PyAppify.exe
+
+  release:
+    needs: [build-nuitka, build-pyinstaller, build-pyappify]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Download Nuitka artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Nuitka-Build
+          path: ./release
+
+      - name: Download PyInstaller artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: PyInstaller-Build
+          path: ./release
+
+      - name: Download PyAppify artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: PyAppify-Build
+          path: ./release
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./release/*.exe
+          generate_release_notes: true
