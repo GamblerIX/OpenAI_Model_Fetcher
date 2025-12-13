@@ -25,7 +25,7 @@ jobs:
 
       - name: Build with Nuitka
         run: |
-          python -m nuitka --standalone --onefile --windows-console-mode=disable --enable-plugin=pyside6 --output-filename=OpenAI_Model_Fetcher_Nuitka.exe main.py
+          python -m nuitka --standalone --onefile --windows-console-mode=disable --enable-plugin=pyside6 --assume-yes-for-downloads --output-filename=OpenAI_Model_Fetcher_Nuitka.exe main.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
