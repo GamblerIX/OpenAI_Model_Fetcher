@@ -399,9 +399,9 @@ class ProfilesPage(QWidget):
 
         header = QHBoxLayout()
         header.addWidget(SubtitleLabel("已保存的配置"))
-        self.refresh_list_btn = PushButton()
+        self.refresh_list_btn = PushButton("刷新")
         self.refresh_list_btn.setIcon(FluentIcon.SYNC)
-        self.refresh_list_btn.setFixedWidth(36)
+        self.refresh_list_btn.setFixedWidth(80)
         self.refresh_list_btn.clicked.connect(self._refresh_list)
         header.addStretch()
         header.addWidget(self.refresh_list_btn)
@@ -450,8 +450,8 @@ class ProfilesPage(QWidget):
 
         profiles = self.config.list_profiles()
         if not profiles:
-            profiles = ["default"]
-            self.config.save("default", "", "")
+            profiles = ["默认"]
+            self.config.save("默认", "", "")
 
         for name in profiles:
             card = CardWidget()
@@ -465,9 +465,9 @@ class ProfilesPage(QWidget):
             use_btn.setFixedWidth(60)
             use_btn.clicked.connect(lambda _, n=name: self._use_profile(n))
 
-            del_btn = PushButton()
+            del_btn = PushButton("删除")
             del_btn.setIcon(FluentIcon.DELETE)
-            del_btn.setFixedWidth(36)
+            del_btn.setFixedWidth(80)
             del_btn.clicked.connect(lambda _, n=name: self._delete_profile(n))
 
             row.addWidget(label)
@@ -564,7 +564,7 @@ class MainWindow(FluentWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("OpenAI Model Fetcher")
-        self.resize(1000, 700)
+        self.resize(1000, 750)
         self.setMinimumSize(800, 600)
         setTheme(Theme.DARK)
         self.navigationInterface.setExpandWidth(140)
