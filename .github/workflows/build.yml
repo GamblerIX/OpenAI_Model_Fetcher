@@ -11,13 +11,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
@@ -37,13 +37,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
@@ -63,33 +63,22 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-      
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install pyappify
 
       - name: Build with PyAppify
-        run: |
-          pyappify build main.py --name OpenAI_Model_Fetcher_PyAppify --onefile --noconsole
+        id: build
+        uses: ok-oldking/pyappify-action@master
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: PyAppify-Build
-          path: dist/OpenAI_Model_Fetcher_PyAppify.exe
+          path: ${{ steps.build.outputs.exe-path }}
 
   release:
     needs: [build-nuitka, build-pyinstaller, build-pyappify]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
-    
+
     steps:
       - name: Download Nuitka artifact
         uses: actions/download-artifact@v4
