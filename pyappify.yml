@@ -1,4 +1,4 @@
-name: "OpenAI_Model_Fetcher"
+name: "OpenAI-Model-Fetcher"
 profiles:
   - name: "release"
     git_url: "https://github.com/GamblerIX/OpenAI_Model_Fetcher.git"
