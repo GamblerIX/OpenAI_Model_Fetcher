@@ -1,10 +1,15 @@
 import sys
+import os
 import json
 import threading
 import webbrowser
 from pathlib import Path
 from datetime import datetime
 from urllib.parse import urlparse, urljoin
+
+# Fix for PyAppify: PySide6 requires PATH environment variable
+if 'PATH' not in os.environ:
+    os.environ['PATH'] = ''
 
 import requests
 from PySide6.QtCore import Signal, QObject, Qt
